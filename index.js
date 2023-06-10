@@ -13,8 +13,6 @@ app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.3zae4eg.mongodb.net/?retryWrites=true&w=majority`;
 
-// const uri = `mongodb+srv://photographyUser:VZ8XOV1LaKc2ZK8R@cluster0.3zae4eg.mongodb.net/?retryWrites=true&w=majority`;
-console.log(process.env.DB_USER)
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -33,9 +31,18 @@ async function run() {
     const classCollection = client.db('photographyDb').collection("class");
 
 
+// class collection
     app.get('/class', async(req,res) => {
         const result = await classCollection.find().toArray();
         res.send(result);
+    })
+
+    app.post('/class', async(req,res) => {
+      const cla = req.body;
+      console.log(cla);
+      const result = await classCollection.insertOne(cla);
+      res.send(result);
+
     })
 
 
