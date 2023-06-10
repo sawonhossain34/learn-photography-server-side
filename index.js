@@ -29,6 +29,7 @@ async function run() {
     await client.connect();
 
     const classCollection = client.db('photographyDb').collection("class");
+    const selectedCollection = client.db('photographyDb').collection("selected");
 
 
 // class collection
@@ -37,14 +38,15 @@ async function run() {
         res.send(result);
     })
 
-    app.post('/class', async(req,res) => {
+    
+    app.post('/selected', async(req,res) => {
       const cla = req.body;
       console.log(cla);
-      const result = await classCollection.insertOne(cla);
+      const result = await selectedCollection.insertOne(cla);
       res.send(result);
 
     })
-
+    
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
