@@ -39,6 +39,17 @@ async function run() {
         res.send(result);
     })
 
+    // selected api collection
+    app.get('/selected', async(req, res) => {
+      const email = req.query.email;
+      if(!email){
+        res.send([]);
+      }
+      const query = {email:email};
+      const result = await selectedCollection.find(query).toArray();
+      res.send(result);
+    })
+
     app.post('/selected', async(req,res) => {
       const cla = req.body;
       console.log(cla);
