@@ -29,6 +29,7 @@ async function run() {
     await client.connect();
 
     const classCollection = client.db('photographyDb').collection("class");
+
     const selectedCollection = client.db('photographyDb').collection("selected");
 
 
@@ -38,7 +39,6 @@ async function run() {
         res.send(result);
     })
 
-    
     app.post('/selected', async(req,res) => {
       const cla = req.body;
       console.log(cla);
