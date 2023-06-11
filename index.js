@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
@@ -8,6 +9,23 @@ const port = process.env.PORT || 5000;
 // middleware
 app.use(cors());
 app.use(express.json());
+
+const varifyJWT = (req, res, next) => {
+  const authorizaion = req.headers.authorization;
+  if (!authorizaion) {
+    return res.status(401).send({ error: true, massage: 'unauthoried access' })
+  }
+
+  // berear_token
+  const token = authorization.split(' ')[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
+    if (err) {
+      return res.status(401).send({ error: true, massage: 'unautroried access' })
+    }
+    req.decoded = decoded;
+    next();
+  })
+}
 
 
 
@@ -31,6 +49,14 @@ async function run() {
     const userCollection = client.db('photographyDb').collection("users");
     const classCollection = client.db('photographyDb').collection("class");
     const selectedCollection = client.db('photographyDb').collection("selected");
+
+    // jwt token secret
+    app.post('/jwt', (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '3h' })
+
+      res.send({ token })
+    })
 
     //user api collection
 
@@ -74,7 +100,13 @@ async function run() {
       res.send(result);
 
     })
-
+//TODO: delete user admin and instructor
+    // app.delete('/users/:id', async (req, res) => {
+    //   const id = req.params.id;
+    //   const query = { _id: new ObjectId(id) };
+    //   const result = await userCollection.deleteOne(query);
+    //   res.send(result);
+    // })
     
     
 
@@ -86,10 +118,14 @@ async function run() {
     })
 
     // selected api collection
-    app.get('/selected', async (req, res) => {
+    app.get('/selected',varifyJWT, async (req, res) => {
       const email = req.query.email;
       if (!email) {
         res.send([]);
+      }
+      const decodedMail = req.decoded.email;
+      if (email !== decodedMail) {
+        return res.status(403).send({ error: true, massage: 'forbidden access' })
       }
       const query = { email: email };
       const result = await selectedCollection.find(query).toArray();
