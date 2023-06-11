@@ -33,36 +33,42 @@ async function run() {
     const selectedCollection = client.db('photographyDb').collection("selected");
 
     //user api collection
-    app.post('/users', async(req,res) => {
+
+    app.get('/users', async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    })
+
+    app.post('/users', async (req, res) => {
       const user = req.body;
-      const query = {email:user.email}
+      const query = { email: user.email }
       const exisUser = await userCollection.findOne(query);
-      if(exisUser){
-        return res.send({message:'already exists this user'})
+      if (exisUser) {
+        return res.send({ message: 'already exists this user' })
       }
       const result = await userCollection.insertOne(user);
       res.send(result);
     })
 
 
-// class collection
-    app.get('/class', async(req,res) => {
-        const result = await classCollection.find().toArray();
-        res.send(result);
+    // class collection
+    app.get('/class', async (req, res) => {
+      const result = await classCollection.find().toArray();
+      res.send(result);
     })
 
     // selected api collection
-    app.get('/selected', async(req, res) => {
+    app.get('/selected', async (req, res) => {
       const email = req.query.email;
-      if(!email){
+      if (!email) {
         res.send([]);
       }
-      const query = {email:email};
+      const query = { email: email };
       const result = await selectedCollection.find(query).toArray();
       res.send(result);
     })
 
-    app.post('/selected', async(req,res) => {
+    app.post('/selected', async (req, res) => {
       const cla = req.body;
       console.log(cla);
       const result = await selectedCollection.insertOne(cla);
@@ -70,13 +76,13 @@ async function run() {
 
     })
 
-    app.delete('/selected/:id', async(req,res) => {
+    app.delete('/selected/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await selectedCollection.deleteOne(query);
       res.send(result);
     })
-    
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
@@ -89,10 +95,10 @@ async function run() {
 run().catch(console.dir);
 
 
-app.get('/', (req,res) => {
-    res.send('learn photography on running');
+app.get('/', (req, res) => {
+  res.send('learn photography on running');
 })
 
 app.listen(port, () => {
-    console.log(`learn photography running on port :${port}`);
+  console.log(`learn photography running on port :${port}`);
 })
