@@ -29,7 +29,6 @@ async function run() {
     await client.connect();
 
     const classCollection = client.db('photographyDb').collection("class");
-
     const selectedCollection = client.db('photographyDb').collection("selected");
 
 
@@ -58,7 +57,7 @@ async function run() {
 
     })
 
-    app.delete('/selected', async(req,res) => {
+    app.delete('/selected/:id', async(req,res) => {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)};
       const result = await selectedCollection.deleteOne(query);
