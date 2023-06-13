@@ -68,7 +68,6 @@ async function run() {
     }
 
     //user api collection
-
     app.get('/users', verifyJWT,verifyAdmin, async (req, res) => {
       const result = await userCollection.find().toArray();
       res.send(result);
@@ -129,9 +128,6 @@ async function run() {
       const result = await userCollection.deleteOne(query);
       res.send(result);
     })
-
-
-
 
     // class collection
     app.get('/class', async (req, res) => {
