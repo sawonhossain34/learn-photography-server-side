@@ -139,6 +139,12 @@ async function run() {
       res.send(result);
     })
 
+    app.post('/class', async (req, res) => {
+      const newClass = req.body;
+      const result = await classCollection.insertOne(newClass);
+      res.send(result);
+    })
+
     // selected api collection
     app.get('/selected', verifyJWT, async (req, res) => {
       const email = req.query.email;
